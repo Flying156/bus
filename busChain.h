@@ -29,12 +29,12 @@ class busChain {//一路的站点
 busChain::~busChain() {
 	busNode* p = firstNode, *q;
 	while (p) {
-		 q = p->next;
+		q = p->next;
 		delete p;
 		p = q;
 	}
 }
-busChain::addNode(string name, double x, double y) {
+void busChain::addNode(string name, double x, double y) {
 	if (firstNode != NULL) {
 		busNode* p = firstNode;
 		while (p) p = p->next;
@@ -53,6 +53,6 @@ busChain::addNode(string name, double x, double y) {
 	}
 	chainSize++;
 }
-busChain::getDist() {
+void busChain::getDist() {
 
 }

@@ -1,4 +1,4 @@
-#include <cgraphics>
+#include <graphics.h>
 #include <iostream>
 
 using namespace std;
@@ -14,3 +14,9 @@ struct Bus { //公交线路
     Station station[100];
     Time BeignTime, EndTime;
 };
+void input() {//输入信息
+
+}
+int main() {
+
+}
