@@ -1,22 +1,17 @@
-#include <graphics.h>
+#include "busRoute.h"
 #include <iostream>
 
 using namespace std;
-struct Station { //公交所经过的站点
-    int x, y;
-};
-struct Time { //时间
-    int hour, minute, sec;
-};
-struct Bus { //公交线路
-    int price, speed;
-    string name;
-    Station station[100];
-    Time BeignTime, EndTime;
-};
-void input() {//输入信息
-
-}
-int main() {
-
+timeNode b, c;
+int main()
+{
+    b.hour = 7;
+    b.hour = 35;
+    b.sec = 40;
+    c.hour = 17;
+    c.hour = 35;
+    c.sec = 40;
+    busRoute* a = new busRoute();
+    a->init1(2, "k7");
+    a->init2(b, c, 80.0);
 }

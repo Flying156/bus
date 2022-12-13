@@ -3,15 +3,17 @@
 
 #include "busChain.h"
 #include <iostream>
+#include <string>
 using namespace std;
+
 struct timeNode {
 	int hour, minute, sec;
 };
 class busRoute {
-	friend timeNode;
+	friend class busChain;
 	public:
 		busRoute() {
-			size = 0;
+			num = 0;
 			speed = 0;
 			price = 0;
 			interval_time = 0;
@@ -20,19 +22,19 @@ class busRoute {
 		void init2(timeNode a, timeNode b, double c);//加时间
 		string getno() { return no; }
 		int getspeed() { return speed; }
-		double getinterval_time{ return interval_time; }
+		double getInterval_time() { return interval_time; }//返回间隔时间
 	private:
 		string no;//线路编号
-		int size;//站点数量
-		busNode circuit;//线路
+		int num;//站点数量
+		busChain circuit;//线路
 		int speed;//车速
 		int price;//价格
 		timeNode begin_time;//起始时间
 		timeNode end_time;//结束时间
 		double interval_time;//间隔时间
 };
-void busRote::init1(int s, string n) {
-	size = s;
+void busRoute::init1(int s, string n) {
+	num = s;
 	no = n;
 	string a;
 	double x, y;
@@ -42,9 +44,10 @@ void busRote::init1(int s, string n) {
 		circuit.addNode(a, x, y);
 	}
 }
-void busRote::init2(timeNode a, timeNode b, double c) {
+void busRoute::init2(timeNode a, timeNode b, double c) {
 	begin_time = a;
 	end_time = b;
 	interval_time = c;
 }
-
+#endif
+#pragma once
