@@ -20,7 +20,7 @@ class busChain {//一路的站点
 		~busChain();
 		busNode* getFirst() { return firstNode; }
 		int getSize() { return chainSize; }
-		void addNode(const string &s, const double &x, const double &y)//插入新节点
+		void addNode(const string &s, const double &x, const double &y)//增加新站点
 		{
 			if (firstNode != NULL) {
 				busNode* p = firstNode;
