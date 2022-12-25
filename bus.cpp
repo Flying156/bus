@@ -58,7 +58,7 @@ void findMintime()
     }
 }
 
-void findMincost()
+void findMincost() //最少花费
 {
     martix.init(); //建立票价矩阵
     routeinfo ri;
@@ -87,6 +87,32 @@ void findMincost()
         cout << "共花费" << dis[getIndex(pb)] << "元。\n";
     }
 }
-void findMintransfer()
+void findMintransfer() //最少换乘次数就是花最少的钱，因为票价相同，所以花最少的钱，换最少的班
 {
+    martix.init(); //建立票价矩阵
+    routeinfo ri;
+    for (int i = 1; i <= routeNum; i++) {
+        ri.Info = bus[i].getNum();
+        ri.data = bus[i].getPrice(); //获得票价
+        busNode* p = bus[i].getLink().getFirst();
+        for (p; p != NULL; p = p->next) {
+            busNode* q = p->next;
+            int ta = getIndex(p->plat_name);
+            if (q != NULL) {
+                int tb = getIndex(q->plat_name);
+
+                martix.Insert(ta, tb, i, ri);
+                martix.Insert(tb, ta, i, ri);
+            }
+        }
+    }
+    cout << "输出出发站点和目的站点：\n";
+    string pa, pb;
+    cin >> pa >> pb;
+    martix.Dijkstra(getIndex(pa), routeNum, dis, pre);
+    if (dis[getIndex(pb)] == noEdge) {
+        cout << "无法移动到" << pb << endl;
+    } else {
+        cout << "共花费" << dis[getIndex(pb)] << "元。\n";
+    }
 }
