@@ -1,148 +1,188 @@
-#ifndef Martix_
-#define Martix_
 
+#ifndef adjMatrix_
+#define adjMatrix_
+
+#include<iostream>
+#include<stack> 
+#include<string.h>
 #include "busRoute.h"
-#include <cstring>
-#include <iostream>
-
 #define sn 30
-const double noEdge = 99999;
+//#define bn 100
+#define noEdge 9999
 using namespace std;
+
 //两站点之间的线路信息
-struct routeinfo {
-    int Info; //线路编号
-    double data; //数据
+struct routeInfo {
+	int Info;//线路编号 
+	double data;//数据 
 };
+
 //两站点之间的线路信息，可有多条线路
-struct Martix {
-    routeinfo s[110];
+struct ver {
+	routeInfo ro[sn];//每条线路信息 
 };
 
-class theMartix {
+class adjMatrix {
 public:
-    theMartix(int theCapacity); //构造函数
-
-    void init(); //初始函数
-    void Insert(int i, int j, int n, routeinfo ri); //插入新线路
-    void outputPath(int pa, int pb, int l, string* platform, int* pre); //输出路径
-    int Search(int i, int j, int cnt); //在两站点寻找最短的线路
-    void Dijkstra(int b, int l, double* dis,
-        int* pre); //查找b点到其余站点最短的距离和前置节点
-
+	adjMatrix(int theCapacity);//构造函数
+	
+	void insert(int i, int j, int nth, routeInfo rt);//插入元素
+	double getElement(int i, int j, int nth);//查找 
+	void ini();//初始化为无边
+	int search(int i, int j, int su);//查找站点i到站点j的所有线路中的最优解
+	void Dijkstra(double *dis, int *pre, int da, int su);//求da到其他点的最短路径
+	void outputPath(int pa, int pb, string *in, int *pre, int su);//输出pa到pb的最短线路
+	
 private:
-    Martix** mp;
-    int n; //点数
-    int m; //边数
+	ver * *theMatrix;//邻接矩阵
+	int n;//点数 
+	int m;//边数 
+	
 };
 
-theMartix::theMartix(int theCapacity) //构造函数
-{
-    n = theCapacity - 1;
-    mp = new Martix*[theCapacity];
-    for (int i = 0; i < theCapacity; i++)
-        mp[i] = new Martix[theCapacity];
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
-            for (int k = 1; k <= n; k++)
-                mp[i][j].s[k].data = noEdge;
+adjMatrix::adjMatrix(int theCapacity) {
+	n = theCapacity - 1;
+	theMatrix = new ver *[theCapacity];
+	for (int i = 0; i<theCapacity; i++) {
+		theMatrix[i] = new ver[theCapacity];
+	}
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			for (int k = 1; k <= sn; k++) {
+				theMatrix[i][j].ro[k].data = noEdge;
+			}
+			
+		}
+	}
+	m = 0;
 }
 
-//初始化
-void theMartix::init()
-{
-    for (int i = 1; i <= n; i++) {
-        for (int j = 1; j <= n; j++)
-            for (int k = 1; k <= sn; k++) {
-                mp[i][j].s[k].data = noEdge; //
-                mp[i][j].s[k].Info = 0;
-            }
-    }
+
+void adjMatrix::insert(int i, int j, int nth, routeInfo rt) {//在i-j处的第nth条线路信息中插入rt
+	if (theMatrix[i][j].ro[nth].data == noEdge) {
+		theMatrix[i][j].ro[nth] = rt;
+		m++;//边数 
+	}
+	else {//已有边，更新信息
+		theMatrix[i][j].ro[nth] = rt;
+	}
+	
 }
 
-//在两站点的第n处插入线路ri
-void theMartix::Insert(int i, int j, int n, routeinfo ri)
-{
-    if (mp[i][j].s[n].data == noEdge) {
-        mp[i][j].s[n] = ri;
-        m++;
-    } else
-        mp[i][j].s[n] = ri;
+
+double adjMatrix::getElement(int i, int j, int nth) {//得到i-j处的第nth条线路的边值
+	return theMatrix[i][j].ro[nth].data;
 }
 
-//找出站点i到站点j的所有公交线路中的最优解
-int theMartix::Search(int i, int j, int cnt)
-{
-    int k = 1;
-    double sum = 1e9;
-    for (int l = 1; l <= cnt; l++) {
-        if (mp[i][j].s[l].data < sum) {
-            sum = mp[i][j].s[l].data = sum;
-            k = l;
-        }
-    }
-    return k;
+
+void adjMatrix::ini() {//初始化均为无边，线路编号均为0 
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			for (int k = 1; k <= sn; k++) {
+				theMatrix[i][j].ro[k].data = noEdge;
+				theMatrix[i][j].ro[k].Info = 0;
+			}
+			
+		}
+	}
 }
 
-void theMartix::Dijkstra(int b, int l, double* dis, int* pre) //寻找一个站点到其他站点最短的距离
-{
-    bool st[50]; //标记数组
-    memset(st, 0, sizeof st);
-    for (int i = 1; i <= 26; i++) {
-        dis[i] = mp[b][i].s[Search(b, i, l)].data;
-        if (dis[i] == noEdge)
-            pre[i] = 0;
-        else
-            pre[i] = b;
-    }
-    for (int i = 1; i <= 25; i++) {
-        int t = -1;
-        for (int j = 1; j <= 26; j++) {
-            if (!st[j] && (t == -1 || dis[t] > dis[j])) {
-                t = j;
-            }
-        }
-        st[t] = 1;
-        for (int j = 1; j <= 26; j++) {
-            if (!st[j] && mp[t][j].s[Search(t, j, l)].data < noEdge) { //????????
-                double tmp = dis[t] + mp[t][j].s[Search(t, j, l)].data;
-                if (tmp < dis[j]) {
-                    dis[j] = tmp;
-                    pre[j] = t;
-                }
-            }
-        }
-    }
+//求da到其他所有点的最短路径长度
+void adjMatrix::Dijkstra(double *dis, int *pre, int da, int su) {
+	int *vis = new int[30];//标记数组
+	//memset(&vis, 0, 30);
+	for (int i = 1; i <= n; i++) {//初始化为未访问过
+		vis[i]=0;
+	}
+	for (int i = 1; i <= 26; i++) {
+		dis[i] = theMatrix[da][i].ro[search(da, i, su)].data;
+		//cout<<"测试："<<this->search(da,i,su)<<" "<<dis[i]<<endl;
+		if (dis[i] == noEdge)
+			pre[i] = 0;
+		else
+			pre[i] = da;
+	}
+	dis[da] = 0;//da到da距离为0 
+
+	vis[da] = 1;//标记为访问过 
+	
+	for (int i = 1; i <= 25; i++) {
+		double temp = noEdge;
+		int v=0;
+		for (int j = 1; j <= 26; j++) {//找出距离 点集 最近的点 
+			if (vis[j]==0 && dis[j]<temp) {
+				//cout << j << endl;
+				v = j;
+				temp = dis[j];
+			}
+		}
+		vis[v] = 1;
+		for (int j = 1; j <= 26; j++) {
+			if (vis[j] == 0 && theMatrix[v][j].ro[search(v, j, su)].data<noEdge) {//更新 
+				double dd = dis[v] + theMatrix[v][j].ro[search(v, j, su)].data;
+				if (dd<dis[j]) {
+					
+					dis[j] = dd;
+					pre[j] = v;
+				}
+			}
+		}
+	}
 }
 
-//输出路径
-void theMartix::outputPath(int pa, int pb, int l, string* platform, int* pre)
-{
-    if (pa == pb)
-        return;
-    int tmp[sn]; //暂时存
-    int cnt = 1;
-    tmp[cnt] = pb;
-    cnt++;
-    int p = pre[pb];
-    while (p != pa) {
-        tmp[cnt++] = p;
-        p = pre[p];
-    }
-    tmp[cnt] = pa;
-    int info = mp[tmp[cnt]][tmp[cnt - 1]].s[Search(tmp[cnt], tmp[cnt - 1], l)].Info;
-    for (int i = cnt; i > 0; i--) {
-        if (i != 1) {
-            if (mp[tmp[i]][tmp[i - 1]].s[Search(tmp[i], tmp[i - 1], l)].Info != info) {
-                cout << "???" << platform[tmp[i]] << "??";
-                cout << "??????��" << mp[tmp[i]][tmp[i - 1]].s[Search(tmp[i], tmp[i - 1], l)].Info << "??";
-                cout << "???" << platform[tmp[i - 1]] << "??";
-            } else {
-                cout << "???" << platform[tmp[i]] << "??";
-            }
-            info = mp[tmp[i]][tmp[i - 1]].s[Search(tmp[i], tmp[i - 1], l)].Info; //??????��???
-        } else //最后站点
-            cout << "???" << platform[tmp[i]] << "??\n";
-    }
+//输出从pa到pb的最短路径 
+void adjMatrix::outputPath(int pa, int pb, string *in, int *pre, int su) {
+	if (pa == pb)
+		return;
+	int temp[sn];
+	int co = 1;//计数器 
+	temp[co] = pb;//终点 
+	co++;
+	int te = pre[pb];//pb的前驱 
+	while (te != pa) {//将路径上的点存到temp数组中 
+		temp[co] = te;
+		co++;
+		te = pre[te];
+	}
+	temp[co] = pa;
+	int info = theMatrix[temp[co]][temp[co - 1]].ro[search(temp[co], temp[co - 1], su)].Info;
+	cout << "线路" << info << "：";
+	
+	for (int i = co; i >= 1; i--) {//倒序输出 
+		if (i != 1) {
+			if (theMatrix[temp[i]][temp[i - 1]].ro[search(temp[i], temp[i - 1], su)].Info != info) {
+				//cout<<"测试："<<in[temp[i]]<<" "<<in[temp[i-1]]<<endl;
+				cout << "站点" << in[temp[i]] << "。";
+				cout << "换乘线路" << theMatrix[temp[i]][temp[i - 1]].ro[search(temp[i], temp[i - 1], su)].Info << "：";
+				cout << "站点" << in[temp[i]] << ",";
+			}
+			else {
+				cout << "站点" << in[temp[i]] << ",";
+			}
+			info = theMatrix[temp[i]][temp[i - 1]].ro[search(temp[i], temp[i - 1], su)].Info;//更新当前线路信息			
+		}
+		else {//最后一个站点 
+			cout << "站点" << in[temp[i]] << "。" << endl;
+		}
+		
+	}
 }
+
+
+//找出站点i到站点j的所有公交线路中的最优解 ，su表示两站点之间的线路条数 
+int adjMatrix::search(int i, int j, int su) {
+	double qq = theMatrix[i][j].ro[1].data;
+	int uu = 1;
+	for (int k = 2; k <= su; k++) {
+		if (theMatrix[i][j].ro[k].data<qq) {
+			qq = theMatrix[i][j].ro[k].data;
+			uu = k;
+		}
+	}
+	//cout<<"测试："<<uu<<endl;
+	return uu;
+}
+
 #endif
 #pragma once
+

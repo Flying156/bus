@@ -1,60 +1,63 @@
+
 #ifndef busRoute_
-#define busRoute_ //ÏßÂ·¼¯ºÏ
+#define busRoute_
 
 #include "busChain.h"
 #include <iostream>
-#include <string>
 using namespace std;
 
-struct timeNode {
-    int hour, minute, sec;
-};
 class busRoute {
-    friend class busChain;
-
 public:
-    busRoute()
-    {
-        num = 0;
-        speed = 0;
-        price = 0;
-        interval_time = 0;
-    }
-    void init1(int s, string n); //³õÊ¼»¯£¬¼ÓÕ¾µã
-    void init2(timeNode a, timeNode b, double c); //¼ÓÊ±¼ä
-    string getno() { return no; }
-    int getNum() { return num; }
-    int getPrice() { return price; }
-    int getSpeed() { return speed; }
-    busChain getLink() { return circuit; }
-    double getInterval_time() { return interval_time; } //·µ»Ø¼ä¸ôÊ±¼ä
-private:
-    string no; //ÏßÂ·±àºÅ
-    int num; //Õ¾µãÊıÁ¿
-    busChain circuit; //ÏßÂ·
-    int speed; //³µËÙ
-    int price; //¼Û¸ñ
-    timeNode begin_time; //ÆğÊ¼Ê±¼ä
-    timeNode end_time; //½áÊøÊ±¼ä
-    double interval_time; //¼ä¸ôÊ±¼ä
+	busRoute() {
+		num = 0;
+		sum = 0;
+		speed = 0;
+		price = 0;
+		time_ = 0;
+	}
+	~busRoute();
+	
+	void initi1(int nn, int ss);//è®¾ç½®çº¿è·¯ç¼–å·ã€ç«™ç‚¹æ€»æ•° 
+	void initi2(double sp, double pp, double tt);//è®¾ç½®ç¥¨ä»·ã€å‘è½¦é—´éš”ã€é€Ÿåº¦
+	double getPrice() { return price; }
+	double getSpeed() { return speed; }
+	int getNum() { return num; }
+	int getSum() { return sum; }
+	double getTime_() { return time_; }
+	busChain& getLink() { return link; }
+	
+	int num;//çº¿è·¯ç¼–å· 
+	int sum;//ç«™ç‚¹æ€»æ•° 
+	double speed;//é€Ÿåº¦ 
+	double price;//ç¥¨ä»· 
+	double time_;//å‘è½¦æ—¶é—´é—´éš”
+	busChain link;//æœ¬å…¬äº¤çº¿è·¯é“¾è¡¨ 
+	
 };
-void busRoute::init1(int s, string n)
-{
-    num = s;
-    no = n;
-    string a;
-    double x, y;
-    cout << "\tÇëÒÀ´ÎÊäÈëÕ¾µãÃû³ÆÓë×ø±ê\n";
-    for (int i = 0; i < s; i++) {
-        cin >> a >> x >> y;
-        circuit.addNode(a, x, y);
-    }
+
+
+void busRoute::initi1(int nn, int ss) {
+	num = nn;
+	sum = ss;
+	string str;
+	double xx, yy;
+	cout << "è¯·ä¾æ¬¡è¾“å…¥å„ä¸ªç«™ç‚¹çš„åç§°å’Œåæ ‡ï¼Œå‡ä»¥ç©ºæ ¼åˆ†éš”ï¼š" << endl;
+	for (int i = 1; i <= sum; i++) {
+		cout << "\tç«™ç‚¹" << i << "ï¼š";
+		
+		cin >> str >> xx >> yy;
+		link.insert(str, xx, yy);
+	}
+	
 }
-void busRoute::init2(timeNode a, timeNode b, double c)
-{
-    begin_time = a;
-    end_time = b;
-    interval_time = c;
+
+//spè¡¨ç¤ºä»·æ ¼ï¼Œppè¡¨ç¤ºå‘è½¦é—´éš”ï¼Œttè¡¨ç¤ºé€Ÿåº¦
+void busRoute::initi2(double sp, double pp, double tt) {
+	price = sp;
+	time_ = pp;
+	speed = tt;
+	
 }
+
 #endif
 #pragma once
